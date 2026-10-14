@@ -112,7 +112,7 @@ private final class LockManagerModel: ObservableObject {
             var successCount = 0
             var failures: [String] = []
             for (index, target) in selected.enumerated() {
-                DispatchQueue.main.async { self?.progressText = "\(index + 1)/\(total)  \(target.name)" }
+                DispatchQueue.main.async { self.progressText = "\(index + 1)/\(total)  \(target.name)" }
                 let result: Result<Void, Error> = Result {
                     let injector = try InjectorV3(target.bundleURL)
                     injector.appID = target.id
@@ -277,7 +277,7 @@ private struct TargetListView: View {
     }
 }
 
-private struct SettingsView: View {
+private struct AppLockSettingsView: View {
     @Binding var pin: String
     @State private var newPIN = ""
     @State private var confirmation = ""
@@ -322,7 +322,7 @@ private struct ManagerTabs: View {
     var body: some View {
         TabView {
             TargetListView(pin: pin).tabItem { Label("应用", systemImage: "checklist") }
-            SettingsView(pin: $pin).tabItem { Label("设置", systemImage: "gearshape") }
+            AppLockSettingsView(pin: $pin).tabItem { Label("设置", systemImage: "gearshape") }
         }
     }
 }
