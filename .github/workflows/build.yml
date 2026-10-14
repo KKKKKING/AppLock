@@ -40,6 +40,12 @@ jobs:
           ref: 942cd0c015f93d8c2d714ba0c69e7f420157c382
           path: theos
 
+      - name: Checkout Theos package tool
+        uses: actions/checkout@v4
+        with:
+          repository: theos/dm.pl
+          path: theos/vendor/dm.pl
+
       - name: Prepare Theos SDK directory
         run: rm -rf theos/sdks
 
