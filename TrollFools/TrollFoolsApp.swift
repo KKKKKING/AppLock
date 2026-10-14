@@ -126,7 +126,6 @@ private final class LockManagerModel: ObservableObject {
                 }
             }
             DispatchQueue.main.async {
-                guard let self else { return }
                 self.isWorking = false
                 self.progressText = ""
                 self.reload()
