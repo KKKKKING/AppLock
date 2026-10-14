@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: applock-build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-14
@@ -35,7 +39,6 @@ jobs:
           repository: theos/theos
           ref: 942cd0c015f93d8c2d714ba0c69e7f420157c382
           path: theos
-          submodules: recursive
 
       - name: Prepare Theos SDK directory
         run: rm -rf theos/sdks
