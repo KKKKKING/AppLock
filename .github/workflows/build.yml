@@ -46,6 +46,18 @@ jobs:
           repository: theos/dm.pl
           path: theos/vendor/dm.pl
 
+      - name: Checkout Theos headers
+        uses: actions/checkout@v4
+        with:
+          repository: theos/headers
+          path: theos/vendor/include
+
+      - name: Checkout Theos libraries
+        uses: actions/checkout@v4
+        with:
+          repository: theos/lib
+          path: theos/vendor/lib
+
       - name: Prepare Theos SDK directory
         run: rm -rf theos/sdks
 
