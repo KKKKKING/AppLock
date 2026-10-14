@@ -1,6 +1,21 @@
 #import <UIKit/UIKit.h>
 
-static NSString *const ALKRequiredPIN = @"930809";
+static NSString *const ALKFallbackPIN = @"930809";
+
+static NSString *ALKRequiredPIN(void) {
+    NSString *pinPath = [NSBundle.mainBundle.bundlePath
+        stringByAppendingPathComponent:@"Frameworks/AppLock.pin"];
+    NSString *configuredPIN = [NSString stringWithContentsOfFile:pinPath
+                                                        encoding:NSUTF8StringEncoding
+                                                           error:nil];
+    configuredPIN = [configuredPIN stringByTrimmingCharactersInSet:
+        NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    if (configuredPIN.length == 6 &&
+        [configuredPIN rangeOfCharacterFromSet:NSCharacterSet.decimalDigitCharacterSet.invertedSet].location == NSNotFound) {
+        return configuredPIN;
+    }
+    return ALKFallbackPIN;
+}
 
 @interface ALKLockViewController : UIViewController <UITextFieldDelegate>
 @property(nonatomic, strong) UITextField *pinField;
@@ -112,7 +127,7 @@ replacementString:(NSString *)string {
 }
 
 - (void)validatePIN {
-    if ([self.pinField.text isEqualToString:ALKRequiredPIN]) {
+    if ([self.pinField.text isEqualToString:ALKRequiredPIN()]) {
         self.pinField.text = @"";
         if (self.unlockHandler != nil) {
             self.unlockHandler();

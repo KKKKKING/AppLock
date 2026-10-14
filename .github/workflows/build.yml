@@ -1,4 +1,4 @@
-name: Build AppLock.dylib
+name: Build AppLockManager.tipa
 
 on:
   push:
@@ -11,19 +11,60 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-15
-    timeout-minutes: 10
+    runs-on: macos-14
+    timeout-minutes: 30
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "15.4"
 
-      - name: Build and inspect dylib
-        run: make clean verify
+      - name: Install build dependencies
+        run: |
+          echo /usr/local/opt/make/libexec/gnubin >> "$GITHUB_PATH"
+          echo /opt/homebrew/opt/make/libexec/gnubin >> "$GITHUB_PATH"
+          HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 \
+            brew install dpkg ldid-procursus make xcbeautify openssl@3
 
-      - name: Upload AppLock.dylib
+      - name: Checkout Theos
+        uses: actions/checkout@v4
+        with:
+          repository: theos/theos
+          ref: 942cd0c015f93d8c2d714ba0c69e7f420157c382
+          path: theos
+          submodules: recursive
+
+      - name: Prepare Theos SDK directory
+        run: rm -rf theos/sdks
+
+      - name: Checkout Theos SDKs
+        uses: actions/checkout@v4
+        with:
+          repository: theos/sdks
+          path: theos/sdks
+
+      - name: Build TIPA and dylib
+        env:
+          THEOS: ${{ github.workspace }}/theos
+          FINALPACKAGE: "1"
+        run: make package
+
+      - name: Inspect dylib
+        run: |
+          file build/AppLock.dylib
+          xcrun otool -L build/AppLock.dylib
+
+      - name: Upload AppLockManager.tipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: AppLockManager-tipa
+          path: packages/AppLockManager_*.tipa
+          if-no-files-found: error
+
+      - name: Upload standalone dylib
         uses: actions/upload-artifact@v4
         with:
           name: AppLock-dylib

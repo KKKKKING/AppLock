@@ -1,0 +1,9 @@
+Package: com.king.applockmanager
+Name: AppLockManager
+Version: 1.0.0-1
+Section: Applications
+Depends: firmware (>= 14.0)
+Architecture: iphoneos-arm
+Author: KKKKKING
+Maintainer: KKKKKING
+Description: Batch AppLock injector for TrollStore.
